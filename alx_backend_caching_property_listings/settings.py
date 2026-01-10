@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'alxbackendcachingpropertylistings.urls'
+ROOT_URLCONF = 'alx_backend_caching_property_listings.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'alxbackendcachingpropertylistings.wsgi.application'
+WSGI_APPLICATION = 'alx_backend_caching_property_listings.wsgi.application'
 
 
 # Database
