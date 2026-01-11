@@ -1,19 +1,18 @@
 from django.shortcuts import render
-from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.http import JsonResponse
 from .models import Property
-from .utils import get_all_properties
+from .utils import get_all_properties, get_redis_cache_metrics
 
 @cache_page(60 * 15)
 def property_list(request):
     properties = get_all_properties()
-    data = []
-    for p in properties:
-        data.append({
-            'title': p.title,
-            'description': p.description,
-            'price': p.price,
-            'location': p.location,
-            'created_at': p.created_at
-        })
-    return JsonResponse(data, safe=False)
+    return render(request, 'properties/property_list.html', {'properties': properties})
+
+def cache_metrics_view(request):
+    metrics = get_redis_cache_metrics()
+    return JsonResponse({
+        "hits": metrics.get('hits', 0),
+        "misses": metrics.get('misses', 0),
+        "hit_ratio": metrics.get('hit_ratio', 0)
+    })
