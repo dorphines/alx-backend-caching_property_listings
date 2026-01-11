@@ -11,4 +11,8 @@ def property_list(request):
 
 def cache_metrics_view(request):
     data = get_redis_cache_metrics()
-    return JsonResponse(data)
+    return JsonResponse({
+        "hits": data.get('hits', 0),
+        "misses": data.get('misses', 0),
+        "hit_ratio": data.get('hit_ratio', 0)
+    })
