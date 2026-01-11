@@ -1,12 +1,14 @@
 version: '3.8'
 
 services:
-  db:
+  postgres:
     image: postgres:latest
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_DB: travel_app_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: alx_caching_db
+      POSTGRES_USER: alx_user
+      POSTGRES_PASSWORD: alx_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -14,6 +16,9 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
 volumes:
   postgres_data:
+  redis_data:
