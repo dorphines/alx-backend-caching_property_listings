@@ -1,33 +1,41 @@
 from django.core.cache import cache
 from django_redis import get_redis_connection
-import logging
 from .models import Property
+import logging
 
 def get_all_properties():
-    queryset = cache.get('all_properties')
-    if queryset is None:
-        queryset = Property.objects.all()
-        list(queryset) # Force evaluation to cache results
-        cache.set('all_properties', queryset, 3600)
-    return queryset
+    """
+    Fetch all properties from cache or database.
+    """
+    properties = cache.get('all_properties')
+    if properties is None:
+        properties = Property.objects.all()
+        list(properties)  # Force evaluation for caching
+        cache.set('all_properties', properties, 3600)
+    return properties
 
 def get_redis_cache_metrics():
-    con = get_redis_connection("default")
-    info = con.info()
-    hits = info.get('keyspace_hits', 0)
-    misses = info.get('keyspace_misses', 0)
-    total = hits + misses
-    hit_ratio = hits / total if total > 0 else 0
-
-    metrics = {
-        'hits': hits,
-        'misses': misses,
-        'hit_ratio': hit_ratio
-    }
-    
-    # Simple print or logger? Instructions say "Log metrics".
-    # I'll use a basic logger.
+    """
+    Connect to Redis via django_redis and retrieve keyspace hits/misses.
+    Calculate hit ratio and log metrics.
+    """
     logger = logging.getLogger(__name__)
-    logger.info(f"Redis Metrics: {metrics}")
-    
-    return metrics
+    try:
+        connection = get_redis_connection("default")
+        info = connection.info()
+        hits = int(info.get('keyspace_hits', 0))
+        misses = int(info.get('keyspace_misses', 0))
+        
+        total = hits + misses
+        hit_ratio = hits / total if total > 0 else 0
+        
+        metrics = {
+            'hits': hits,
+            'misses': misses,
+            'hit_ratio': hit_ratio
+        }
+        logger.info(f"Redis Cache Metrics: {metrics}")
+        return metrics
+    except Exception as e:
+        logger.error(f"Error retrieving Redis metrics: {e}")
+        return {'hits': 0, 'misses': 0, 'hit_ratio': 0}
