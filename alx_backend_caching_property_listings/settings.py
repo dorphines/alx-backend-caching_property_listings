@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b6#_z#+8xkk#@aw-(ziz$_vm4ppslx)l^j)t1#74m1&0#=2he5'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-b6#_z#+8xkk#@aw-(ziz$_vm4ppslx)l^j)t1#74m1&0#=2he5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -77,18 +78,18 @@ WSGI_APPLICATION = 'alx_backend_caching_property_listings.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alx_caching_db',
-        'USER': 'alx_user',
-        'PASSWORD': 'alx_password',
-        'HOST': 'postgres',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'alx_caching_db'),
+        'USER': os.environ.get('DB_USER', 'alx_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'alx_password'),
+        'HOST': os.environ.get('DB_HOST', 'postgres'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": os.environ.get('REDIS_URL', 'redis://redis:6379/1'),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
